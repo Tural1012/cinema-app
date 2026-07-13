@@ -1,0 +1,40 @@
+# Обновить .gitignore (добавить .idea и другие)
+@"
+# Java
+target/
+*.class
+*.log
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+.DS_Store
+
+# Maven
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+
+# Gradle
+.gradle/
+build/
+gradle/
+gradlew
+gradlew.bat
+
+# Application properties (если содержат пароли)
+application.properties
+application-dev.properties
+application-prod.properties
+
+# Docker (опционально)
+*.pptx
+*.ppt
+
+# System files
+Thumbs.db
+.DS_Store
+"@ | Out-File -FilePath ".gitignore" -Encoding UTF8
