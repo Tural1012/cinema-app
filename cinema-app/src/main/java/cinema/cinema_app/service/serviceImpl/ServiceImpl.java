@@ -12,6 +12,7 @@ import cinema.cinema_app.repo.CinemaHallRepository;
 import cinema.cinema_app.repo.CinemaRepository;
 import cinema.cinema_app.repo.MovieRepository;
 import cinema.cinema_app.repo.TicketRepository;
+import cinema.cinema_app.exception.SeatAlreadyTakenException;
 import cinema.cinema_app.service.EmailService;
 import cinema.cinema_app.service.Service;
 import jakarta.persistence.EntityNotFoundException;
@@ -21,8 +22,11 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cloud.client.loadbalancer.Response;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 
 import java.time.LocalDateTime;
@@ -81,7 +85,13 @@ public class ServiceImpl implements Service {
         else {
             newticket.setPrice(VipCinemaHall.price);
         }
-        ticketRepository.save(newticket);
+        try {
+            ticketRepository.saveAndFlush(newticket);
+        } catch (DataIntegrityViolationException e) {
+            throw new SeatAlreadyTakenException(
+                    "Seat " + newticket.getRow() + "/" + newticket.getSeatColumn()
+                            + " for " + movie1.getName() + " is already booked");
+        }
         return ticketMapper.dtoForUser(newticket);
     }
 
@@ -158,12 +168,34 @@ public class ServiceImpl implements Service {
                 case VIP -> newTicket.setPrice(VipCinemaHall.price);
             }
 
-            ticketRepository.save(newTicket);
-            emailService.mailSender(ticketMapper.dtoForUser(newTicket));
+            try {
+                ticketRepository.saveAndFlush(newTicket);
+            } catch (DataIntegrityViolationException e) {
+                throw new SeatAlreadyTakenException(
+                        "Seat " + newTicket.getRow() + "/" + newTicket.getSeatColumn()
+                                + " for " + movie.getName() + " is already booked");
+            }
+
             ticketDtoForUsersList.add(ticketMapper.dtoForUser(newTicket));
         }
 
+
+        sendTicketEmailsAfterCommit(ticketDtoForUsersList);
+
         return ticketDtoForUsersList;
+    }
+
+    private void sendTicketEmailsAfterCommit(List<TicketDtoForUsers> tickets) {
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    tickets.forEach(emailService::mailSender);
+                }
+            });
+        } else {
+            tickets.forEach(emailService::mailSender);
+        }
     }
 
 

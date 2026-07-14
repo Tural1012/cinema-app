@@ -32,11 +32,17 @@ public class GlobalExceptionHand {
         return ResponseEntity.status(400).body(apiError);
     }
 
+    @ExceptionHandler(SeatAlreadyTakenException.class)
+    public ResponseEntity<ApiError> handleSeatAlreadyTaken(SeatAlreadyTakenException ex) {
+        ApiError apiError = new ApiError(HttpStatus.CONFLICT.value(), ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiError);
+    }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public  ResponseEntity<ApiError>  handleDataIntegrityViolation(DataIntegrityViolationException ex) {
-        String message = "Not exist";
-        if (ex.getMessage().contains("unique_ticket_seat")) {
-            message = "This place has been already buy";
+        String message = "Data integrity violation";
+        if (ex.getMessage() != null && ex.getMessage().contains("uk_ticket_seat")) {
+            message = "This place has already been booked";
         }
         ApiError apiError = new ApiError(HttpStatus.CONFLICT.value(), message);
         return ResponseEntity.status(HttpStatus.CONFLICT).body(apiError);
