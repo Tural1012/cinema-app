@@ -12,8 +12,8 @@ import java.util.Base64;
 public class AuthFilter implements Filter {
 
 
-    private static final String ADMIN_EMAIL = "admin@cinema.com";
-    private static final String ADMIN_PASSWORD = "mypassword123";
+    private static final String ADMIN_EMAIL = "admin_panel@cinema.com";
+    private static final String ADMIN_PASSWORD = "my_password12345";
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -51,7 +51,7 @@ public class AuthFilter implements Filter {
     private boolean isPublicEndpoint(String path) {
         return
                 path
-                        .matches("^/(all/movies|comingSoon/movies|buy/ticket|today/movies|cinema/movies/.*|movies/.*/cinema/.*|cinema/movies/by/type/.*/.*)$")
+                        .matches("^/(movie/all|moovie/comingSoon|buy/ticket|movie/today|cinema/movies/.*|movies/.*/cinema/.*|cinema/movies/by/type/.*/.*)$")
                         || path.startsWith("/swagger-ui")      // Swagger UI
                         || path.startsWith("/v3/api-docs")     // OpenAPI JSON
                         || path.startsWith("/swagger-resources") // Swagger resources

@@ -34,13 +34,13 @@ public class CinemaMoviesController {
     }
 
 
-    @PostMapping("/create/movie/in/{cinemaId}")
+    @PostMapping("/movie/in/{cinemaId}")
     public ResponseEntity<MovieDto> createMovie(@RequestBody @Valid MovieDto dto, @PathVariable Long cinemaId){
         MovieDto createdMovie = service.createMovie(dto, cinemaId);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdMovie);
     }
 
-    @PostMapping("/add/movie/{movieId}/to/{cinemaId}")
+    @PostMapping("/movie/{movieId}/to/{cinemaId}")
     public ResponseEntity<MovieDto> addMovieToCinemaWithID(@PathVariable Long movieId,
                                                            @PathVariable Long cinemaId){
         MovieDto addedMovie = service.addMovieToCinema(movieId, cinemaId);
