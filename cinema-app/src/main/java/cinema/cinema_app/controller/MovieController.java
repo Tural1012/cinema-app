@@ -15,17 +15,17 @@ public class MovieController {
 
     private final Service service;
 
-    @GetMapping("/comingSoon/movies")
+    @GetMapping("/movie/comingSoon")
     public List<MovieDto> getAllComingSoonTickets() {
         return service.getAllComingSoonMovies();
     }
 
-    @GetMapping("/today/movies")
+    @GetMapping("/movie/today")
     public List<MovieDto> getAllTodayMovies () {
         return service.getAllTodayMovies();
     }
 
-    @GetMapping("/all/movies")
+    @GetMapping("/movie/all")
     public List<MovieDto> getAllMovies() {
         return service.getAllMovies();
     }
