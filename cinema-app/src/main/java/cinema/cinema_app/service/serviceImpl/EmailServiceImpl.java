@@ -27,7 +27,7 @@ public class EmailServiceImpl implements EmailService {
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
             helper.setTo(ticket.getEmail());
-            helper.setSubject("🎬 Sizin Biletiniz!!!");
+            helper.setSubject("🎬 Sizin Biletiniz!");
 
 
             String html = buildHTMLTicket(ticket);
